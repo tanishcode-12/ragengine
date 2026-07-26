@@ -1,117 +1,3 @@
-## 📘 README.md
-
-```markdown
-# 🚗 Dynamic Pricing for Urban Parking Lots
-
-This project simulates a real-time, intelligent pricing engine for urban parking spaces using historical and streaming data. It adjusts parking prices dynamically based on demand, traffic conditions, queue lengths, special events, and competition between nearby lots.
-
-Developed as part of the **Summer Analytics 2025** capstone challenge hosted by the **Consulting & Analytics Club × Pathway**.
-
----
-
-## 📊 Project Overview
-
-Urban parking spaces are limited and often mispriced due to static pricing models. This project introduces a **data-driven dynamic pricing system** that reacts to real-time features to improve utilization and efficiency.
-
----
-
-## 🔍 Features
-
-- ⏱️ Real-time simulation of 14 parking lots over 73 days
-- 📈 Three dynamic pricing models:
-  1. **Baseline Linear Model** – Increases price based on occupancy
-  2. **Demand-Based Model** – Uses a weighted demand function
-  3. **Competitive Model (Optional)** – Adjusts price based on nearby lots' pricing
-- 📡 Live data simulation using **Pathway**
-- 🧠 Models implemented from scratch using **NumPy** and **Pandas**
-- 📉 Visualizations using **Bokeh** and **Plotly**
-
----
-
-## 📁 Dataset
-
-- **Records:** 18,000+ (sampled every 30 mins between 8:00 AM – 4:30 PM)
-- **Fields Include:**
-  - `Latitude`, `Longitude`, `Capacity`, `Occupancy`
-  - `VehicleType`, `TrafficConditionNearby`, `QueueLength`
-  - `IsSpecialDay`, `Datetime`
-
----
-
-## 🧠 Model Summary
-
-### 1️⃣ Baseline Linear Model
-
-Price increases linearly with occupancy:
-```
-
-Price_t+1 = Price_t + α \* (Occupancy / Capacity)
-
-```
-
----
-
-### 2️⃣ Demand-Based Model
-Price adjusts based on calculated demand:
-
-```
-
-Demand = α\*(Occupancy/Capacity) + β*QueueLength − γ*Traffic + δ*IsSpecialDay + ε*VehicleTypeWeight
-Price = BasePrice \* (1 + λ \* NormalizedDemand)
-
-````
-
----
-
-### 3️⃣ Competitive Model (Optional)
-- Uses geospatial proximity to simulate nearby lot competition
-- Price decreases or reroutes vehicles if nearby lots are cheaper
-
----
-
-## ⚙️ Tech Stack
-
-| Component         | Technology           |
-|------------------|----------------------|
-| Data Processing   | Python, Pandas, NumPy |
-| Real-Time Engine  | Pathway              |
-| Visualization     | Bokeh, Plotly        |
-| Geo Calculations  | Geopy                |
-| Deployment        | Google Colab / Jupyter Notebook |
-
----
-
-## 📦 Installation
-
-```bash
-pip install pandas numpy pathway bokeh plotly geopy
-````
-
----
-
-## ▶️ How to Run
-
-1. Open the notebook in **Google Colab** or **VS Code Jupyter**.
-2. Run all cells from top to bottom.
-3. Visualizations will auto-generate using Bokeh or Plotly.
-4. To view real-time charts using Bokeh:
-   - Use `output_file()` to export to an interactive HTML page.
-
----
-
-## 📊 Visualization
-
-- 📍 Real-time pricing line plots per parking lot
-- 📊 Comparison of price trends over time
-- 📡 Competitor-aware pricing changes (Model 3)
-
----
-
-## 📝 Assumptions
-
-- Base price is fixed at **\$10**
-- Demand normalization ensures price stays between **0.5x and 2x** base
-- Vehicle weights and traffic weights are manually tuned
 <p align="center">
   <img src="./assets/ragengine_banner.gif" alt="ragengine banner" width="100%">
 </p>
@@ -140,9 +26,7 @@ pip install -r requirements.txt && pip install -e .
 uvicorn ragengine.api.main:app --reload
 # -> http://localhost:8000/docs
 ```
-
 or
-
 ```bash
 docker compose up --build
 ```
@@ -161,14 +45,14 @@ curl -X POST localhost:8000/query -H 'content-type: application/json' \
 
 This project grew out of six IBM Skills Network / LangChain course notebooks covering one underlying skill — building a retrieval pipeline — just at different stages: document loading, text splitting, embeddings, vector stores, and retrieval strategies. Rather than clean each notebook up individually, this reorganizes all of them into **one system**, with each notebook's techniques becoming a swappable implementation behind a shared interface, plus an **agentic RAG** layer on top (an LLM that decides whether/how to retrieve, rather than a fixed pipeline).
 
-| Stage        | Source notebook                            | What became pluggable here                                                                                                                                                     |
-| ------------ | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Load         | `LangChain_document_loader`                | 7 loaders: text, PDF (pypdf/PyMuPDF), Markdown, JSON, CSV, web/HTML, docx                                                                                                      |
-| Split        | `LangChain_text-splitter`                  | 5 splitters: character, recursive character, code (language-aware), markdown-header, HTML-header                                                                               |
-| Embed        | `Embed_documents_with_watsonx's_embedding` | embedding backends: deterministic fake (default/tests) + sentence-transformers (real, local)                                                                                   |
-| Store        | `LangChain_vector_store`                   | Chroma + FAISS, both hand-wrapped (see "Deliberate departures" below)                                                                                                          |
-| Retrieve     | `LangChain_retriever`                      | similarity / MMR / score-threshold / multi-query / parent-document / self-query                                                                                                |
-| (motivation) | `Full_document_retrieve_limitation`        | the reason retrieval-then-generate exists instead of stuffing whole documents into a prompt — see the agent's reformulation loop below for the same problem from another angle |
+| Stage | Source notebook | What became pluggable here |
+|---|---|---|
+| Load | `LangChain_document_loader` | 7 loaders: text, PDF (pypdf/PyMuPDF), Markdown, JSON, CSV, web/HTML, docx |
+| Split | `LangChain_text-splitter` | 5 splitters: character, recursive character, code (language-aware), markdown-header, HTML-header |
+| Embed | `Embed_documents_with_watsonx's_embedding` | embedding backends: deterministic fake (default/tests) + sentence-transformers (real, local) |
+| Store | `LangChain_vector_store` | Chroma + FAISS, both hand-wrapped (see "Deliberate departures" below) |
+| Retrieve | `LangChain_retriever` | similarity / MMR / score-threshold / multi-query / parent-document / self-query |
+| (motivation) | `Full_document_retrieve_limitation` | the reason retrieval-then-generate exists instead of stuffing whole documents into a prompt — see the agent's reformulation loop below for the same problem from another angle |
 
 ## Why it's organized this way
 
@@ -201,13 +85,13 @@ The protocol is plain-text (`SEARCH: <query>` / `ANSWER: <answer>`) rather than 
 
 ## API
 
-| Endpoint            | Purpose                                                |
-| ------------------- | ------------------------------------------------------ |
-| `GET /health`       | backend status + index counts                          |
-| `POST /ingest`      | upload a file (txt/pdf/md/json/csv/docx/html) to index |
-| `POST /ingest/text` | index raw text with no file                            |
-| `POST /query`       | one-shot retrieve + answer                             |
-| `POST /agent/query` | agentic retrieve + answer (see above)                  |
+| Endpoint | Purpose |
+|---|---|
+| `GET /health` | backend status + index counts |
+| `POST /ingest` | upload a file (txt/pdf/md/json/csv/docx/html) to index |
+| `POST /ingest/text` | index raw text with no file |
+| `POST /query` | one-shot retrieve + answer |
+| `POST /agent/query` | agentic retrieve + answer (see above) |
 
 Full interactive docs at `/docs` once running (FastAPI/Swagger, auto-generated from `api/schemas.py`).
 
@@ -218,7 +102,6 @@ Full interactive docs at `/docs` once running (FastAPI/Swagger, auto-generated f
 Everything is an environment variable prefixed `RAG_` (see `.env.example` for the full list with defaults) or a field on `Settings` (`config.py`). Nothing is required — defaults are `fake` embeddings + `stub` LLM + in-memory Chroma.
 
 To use real local models instead:
-
 ```bash
 pip install -e ".[local-models]"    # pulls in torch + transformers + sentence-transformers
 export RAG_EMBEDDING_BACKEND=sentence_transformers
@@ -241,7 +124,6 @@ pytest
 Being direct about this rather than overselling it:
 
 **Verified in this build**, including in a clean virtualenv built from nothing but `requirements.txt`:
-
 - All 7 loaders, against real files (including a generated PDF and a generated .docx — see `tests/fixtures/`)
 - All 5 splitters, including metadata propagation through chunking
 - Both vector store backends — CRUD, similarity search, metadata filtering, and two real bugs this surfaced and fixed: Chroma silently invoking its own default embedding model if you update a document's text without also passing a new embedding, and Chroma rejecting `None` metadata values / empty metadata dicts outright (see `vectorstores/chroma_store.py`)
@@ -252,7 +134,6 @@ Being direct about this rather than overselling it:
 - A full round-trip: booted the API for real with `uvicorn` and exercised every endpoint with `curl`, and separately extracted a clean zip of the repo into a fresh virtualenv and re-ran the whole test suite from nothing but `requirements.txt`
 
 **Not verified here, and why:**
-
 - `SentenceTransformerEmbedding` and `HuggingFaceLocalLLM` — these need `huggingface.co` network access to download model weights, which the environment this was built in doesn't have. The code is structurally correct and the import is lazy (importing the package never requires `torch`), but the actual download-and-embed path hasn't been exercised. Try it locally: `pip install -e ".[local-models]"`.
 - `OllamaLLM` — needs a running `ollama serve` process not available in that environment.
 - The actual `docker build` — Docker itself wasn't available there either. The Dockerfile runs the same `pip install -r requirements.txt` + `pip install --no-deps -e .` steps verified directly in the clean virtualenv above, but the image itself was never built.
