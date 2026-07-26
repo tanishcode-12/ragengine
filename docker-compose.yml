@@ -1,0 +1,30 @@
+services:
+  ragengine:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      RAG_EMBEDDING_BACKEND: fake
+      RAG_LLM_BACKEND: stub
+      RAG_VECTOR_STORE_BACKEND: chroma
+      # Point Chroma at a persistent path (bind-mounted below) so the
+      # index survives a container restart. Leave unset for in-memory.
+      RAG_VECTOR_STORE_PERSIST_DIR: /data/chroma
+    volumes:
+      - ./data:/data
+
+  # Optional: a real, free, local LLM server. Uncomment this service and
+  # set RAG_LLM_BACKEND=ollama + RAG_OLLAMA_BASE_URL=http://ollama:11434
+  # above to use it instead of the zero-config stub LLM. After starting,
+  # pull a model once with:
+  #   docker compose exec ollama ollama pull llama3.2
+  #
+  # ollama:
+  #   image: ollama/ollama:latest
+  #   ports:
+  #     - "11434:11434"
+  #   volumes:
+  #     - ollama_data:/root/.ollama
+
+# volumes:
+#   ollama_data:
