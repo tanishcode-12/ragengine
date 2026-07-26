@@ -1,0 +1,33 @@
+# Locked to the versions this project was built and tested against.
+# This is a hand-picked list of ragengine's actual direct dependencies
+# (see pyproject.toml) — NOT a raw `pip freeze`, which would also capture
+# whatever unrelated packages happen to be installed in a given environment.
+#
+# Install with: pip install -r requirements.txt
+# (equivalent to `pip install .` using pyproject.toml, but with exact
+# pinned versions for a reproducible Docker build)
+
+fastapi==0.139.2
+uvicorn[standard]==0.51.0
+pydantic==2.13.4
+pydantic-settings==2.14.2
+langchain-core==1.5.0
+langchain-text-splitters==1.1.2
+pypdf==5.9.0
+pymupdf==1.28.0
+docx2txt==0.9
+beautifulsoup4==4.14.3
+lxml==6.0.2
+requests==2.33.1
+chromadb==1.5.9
+faiss-cpu==1.14.3
+numpy==2.4.4
+python-multipart==0.0.32
+
+# --- Optional: real local models (NOT installed/verified in the sandbox
+# this project was built in — no network access to huggingface.co there).
+# Uncomment to use EMBEDDING_BACKEND=sentence_transformers or
+# LLM_BACKEND=huggingface instead of the zero-config fake/stub defaults.
+# sentence-transformers>=3.0
+# transformers>=4.42
+# torch>=2.2
