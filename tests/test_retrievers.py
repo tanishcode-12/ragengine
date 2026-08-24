@@ -33,11 +33,11 @@ def test_available_retrievers():
         "mmr",
         "multi_query",
         "parent_document",
+        "rerank",
         "self_query",
         "similarity",
         "similarity_score_threshold",
     ]
-
 
 def test_get_retriever_class_raises_on_unknown_name():
     with pytest.raises(ValueError):
