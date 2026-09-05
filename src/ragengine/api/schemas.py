@@ -29,8 +29,8 @@ class QueryRequest(BaseModel):
     question: str = Field(..., min_length=1)
     retriever_name: str | None = Field(
         None,
-        description="similarity | mmr | similarity_score_threshold | multi_query | parent_document | self_query. "
-        "Defaults to the server's configured default retriever.",
+        description="similarity | mmr | similarity_score_threshold | multi_query | parent_document | "
+        "self_query | rerank. Defaults to the server's configured default retriever.",
     )
     k: int | None = Field(None, ge=1, le=50, description="Number of chunks to retrieve")
 
