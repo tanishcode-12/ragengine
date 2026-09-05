@@ -25,8 +25,10 @@ from ragengine.loaders import get_loader, get_loader_for_path
 from ragengine.retrievers.base import Retriever
 from ragengine.retrievers.multi_query import MultiQueryRetriever
 from ragengine.retrievers.parent_document import ParentDocumentRetriever
+from ragengine.retrievers.reranking import RerankingRetriever
 from ragengine.retrievers.self_query import SelfQueryRetriever
 from ragengine.retrievers.similarity import VectorStoreRetriever
+from ragengine.rerankers import get_reranker
 from ragengine.splitters import get_splitter
 from ragengine.vectorstores import get_vector_store
 from ragengine.vectorstores.base import VectorStore
@@ -137,10 +139,25 @@ class RagPipeline:
         if name == "parent_document":
             return self._build_parent_document_retriever(**kwargs)
 
+        if name == "rerank":
+            base_retriever = kwargs.pop("base_retriever", None) or VectorStoreRetriever(
+                self.vector_store, self.embedding_model, search_type="similarity"
+            )
+            reranker_name = kwargs.pop("reranker_backend", None) or self.settings.reranker_backend
+            reranker_kwargs = kwargs.pop("reranker_kwargs", None) or self._reranker_kwargs(reranker_name)
+            fetch_k = kwargs.pop("fetch_k", self.settings.rerank_fetch_k)
+            reranker = get_reranker(reranker_name, **reranker_kwargs)
+            return RerankingRetriever(base_retriever=base_retriever, reranker=reranker, fetch_k=fetch_k, **kwargs)
+
         raise ValueError(
             f"Unknown retriever {name!r}. Available: "
-            f"{sorted(_SIMPLE_RETRIEVER_NAMES | {'multi_query', 'self_query', 'parent_document'})}"
+            f"{sorted(_SIMPLE_RETRIEVER_NAMES | {'multi_query', 'self_query', 'parent_document', 'rerank'})}"
         )
+
+    def _reranker_kwargs(self, reranker_name: str) -> dict:
+        if reranker_name == "cross_encoder":
+            return {"model_name": self.settings.reranker_model_name}
+        return {}
 
     # -- public operations ------------------------------------------------------
 

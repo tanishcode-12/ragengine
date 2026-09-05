@@ -56,8 +56,20 @@ class Settings(BaseSettings):
     ollama_base_url: str = "http://localhost:11434"
 
     # --- Retrieval -----------------------------------------------------------
-    default_retriever: str = "similarity"  # "similarity" | "mmr" | "multi_query" | "parent_document" | "self_query"
+    # "rerank" added: "similarity" | "mmr" | "multi_query" | "parent_document" | "self_query" | "rerank"
+    default_retriever: str = "similarity"
     top_k: int = 4
+
+    # --- Reranking -------------------------------------------------------------
+    # "lexical_overlap" = deterministic BM25, dependency-free (default, matches
+    # the "fake" embedding / "stub" LLM philosophy of zero-setup-by-default).
+    # "cross_encoder" = real local cross-encoder model (requires the
+    # `local-models` extra and network access to huggingface.co on first run).
+    reranker_backend: str = "lexical_overlap"
+    reranker_model_name: str = "cross-encoder/ms-marco-MiniLM-L-6-v2"
+    # How many candidates the base retriever fetches before RerankingRetriever
+    # narrows them down to top_k.
+    rerank_fetch_k: int = 20
 
     # --- Agent ---------------------------------------------------------------
     agent_max_iterations: int = 3
