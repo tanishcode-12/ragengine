@@ -34,6 +34,13 @@ def test_query_with_explicit_retriever_name(pipeline, fixtures_dir):
     assert len(result["sources"]) <= 2
 
 
+def test_query_with_rerank_retriever(pipeline, fixtures_dir):
+    pipeline.ingest_file(str(fixtures_dir / "sample.txt"))
+    result = pipeline.query("vacation days", retriever_name="rerank", k=2)
+    assert len(result["sources"]) <= 2
+    assert isinstance(result["answer"], str) and result["answer"]
+
+
 def test_query_with_unknown_retriever_raises(pipeline, fixtures_dir):
     pipeline.ingest_file(str(fixtures_dir / "sample.txt"))
     with pytest.raises(ValueError):
